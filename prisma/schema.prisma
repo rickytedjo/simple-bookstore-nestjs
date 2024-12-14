@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url = env("DB_URL")
+}
+
+model User {
+  id Int @db.UnsignedInt @id @default(autoincrement())
+  createdAt DateTime @db.Timestamp() @default(dbgenerated("CURRENT_TIMESTAMP"))
+  updatedAt DateTime @db.Timestamp() @updatedAt
+
+  email String @unique
+  password String
+
+  username String
+
+  transactions Transaction[]
+
+  @@map("user")
+}
+
+model Transaction {
+  id Int @db.UnsignedInt @id @default(autoincrement())
+  createdAt DateTime @db.Timestamp() @default(dbgenerated("CURRENT_TIMESTAMP"))
+  updatedAt DateTime @db.Timestamp() @updatedAt
+  
+  purchaseDate DateTime @db.Timestamp() @default(dbgenerated("CURRENT_TIMESTAMP"))
+
+  userId Int @db.UnsignedInt
+  user User @relation(fields: [userId],references: [id])
+
+  items TransactionItem[]
+
+  total Int @db.UnsignedInt @default(0) 
+
+  @@map("transaction")
+}
+
+model TransactionItem {
+  id Int @db.UnsignedInt @id @default(autoincrement())
+  createdAt DateTime @db.Timestamp() @default(dbgenerated("CURRENT_TIMESTAMP"))
+  updatedAt DateTime @db.Timestamp() @updatedAt
+
+  transactionId Int @db.UnsignedInt
+  transaction Transaction @relation(fields: [transactionId], references: [id])
+
+  bookId Int @db.UnsignedInt
+  book Book @relation(fields: [bookId],references: [id])
+
+  qty Int @db.UnsignedInt
+  subtotal Int @db.UnsignedInt @default(0)
+  
+  @@map("transaction_item")
+}
+
+model Book {
+  id Int @db.UnsignedInt @id @default(autoincrement())
+  createdAt DateTime @db.Timestamp() @default(dbgenerated("CURRENT_TIMESTAMP"))
+  updatedAt DateTime @db.Timestamp() @updatedAt
+
+  title String
+  price Int @db.UnsignedInt
+  desc String? @db.Text
+
+  orders TransactionItem[]
+
+  @@map("book")
+}
