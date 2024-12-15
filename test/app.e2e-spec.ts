@@ -6,6 +6,7 @@ import { PrismaService } from './../src/prisma/prisma.service';
 import { AuthDto, RegDto } from './../src/modules/auth/dto';
 import { createUserDto, editUserDto } from 'src/modules/user/dto';
 import { createBookDto, editBookDto } from 'src/modules/book/dto';
+import { createTransactionDto } from 'src/modules/transaction/dto';
 
 describe('App E2E', () => {
   let app: INestApplication;
@@ -262,4 +263,246 @@ describe('App E2E', () => {
       });
     });
   });
-});
+  describe('Transaction', () => {
+
+    const editBookDto : editBookDto = {
+      title : 'The Illiad',
+      price : 15000,
+      desc : 'Homer Simpson'
+    }
+
+    describe('Create Transaction', () => {
+      it('Should fail without token', () => {
+        return pactum.spec().post('/transaction').withBody({
+          userId : '$S{userId}'
+        }).expectStatus(401);
+      });
+
+      it('Should create transaction successfully with valid token', () => {
+        return pactum
+          .spec()
+          .post('/transaction')
+          .withBearerToken('$S{userAt}')
+          .withBody({
+            userId : '$S{userId}'
+          })
+          .expectStatus(201)
+          .stores('transactionId', 'id');
+      });
+    });
+
+    describe('Get Transactions', () => {
+      it('Should fail without token', () => {
+        return pactum.spec().get('/transaction').expectStatus(401);
+      });
+
+      it('Should retrieve transactions successfully', () => {
+        return pactum.spec().get('/transaction').withBearerToken('$S{userAt}').expectStatus(200);
+      });
+    });
+
+    describe('Get Transaction by ID', () => {
+      it('Should fail without token', () => {
+        return pactum
+          .spec()
+          .get('/transaction/{id}')
+          .withPathParams('id', '$S{transactionId}')
+          .expectStatus(401);
+      });
+
+      it('Should retrieve transaction by ID successfully', () => {
+        return pactum
+          .spec()
+          .get('/transaction/{id}')
+          .withPathParams('id', '$S{transactionId}')
+          .withBearerToken('$S{userAt}')
+          .expectStatus(200);
+      });
+    });
+
+    describe('Edit Transaction by ID', () => {
+      it('Should fail without token', () => {
+        return pactum
+          .spec()
+          .patch('/transaction/{id}')
+          .withPathParams('id', '$S{transactionId}')
+          .withBody({
+            total : 50000
+          })
+          .expectStatus(401);
+      });
+
+      it('Should modify transaction by ID successfully', () => {
+        return pactum
+          .spec()
+          .patch('/transaction/{id}')
+          .withPathParams('id', '$S{transactionId}')
+          .withBearerToken('$S{userAt}')
+          .withBody({
+            total : 50000
+          })
+          .expectStatus(200);
+      });
+    });
+  });
+  describe('Transaction Item',()=>{
+    
+    describe('Create Transaction Item', () => {
+      it('Should fail without token', () => {
+        return pactum.spec().post('/transaction-item').withBody({
+          transactionId : '$S{transactionId}',
+          bookId : '$S{bookId}',
+          qty : 2
+        }).expectStatus(401);
+      });
+
+      it('Should create transaction item successfully with valid token', () => {
+        return pactum
+          .spec()
+          .post('/transaction-item')
+          .withBearerToken('$S{userAt}')
+          .withBody({
+            transactionId : '$S{transactionId}',
+            bookId : '$S{bookId}',
+            qty : 2
+          })
+          .expectStatus(201)
+          .stores('transactionItemId', 'id');
+      });
+    });
+
+    describe('Get Transaction items', () => {
+      it('Should fail without token', () => {
+        return pactum.spec().get('/transaction-item').expectStatus(401);
+      });
+
+      it('Should retrieve transactio items successfully', () => {
+        return pactum.spec().get('/transaction-item').withBearerToken('$S{userAt}').expectStatus(200);
+      });
+    });
+
+    describe('Get Transaction item by ID', () => {
+      it('Should fail without token', () => {
+        return pactum
+          .spec()
+          .get('/transaction-item/{id}')
+          .withPathParams('id', '$S{transactionItemId}')
+          .expectStatus(401);
+      });
+
+      it('Should retrieve transaction item by ID successfully', () => {
+        return pactum
+          .spec()
+          .get('/transaction-item/{id}')
+          .withPathParams('id', '$S{transactionItemId}')
+          .withBearerToken('$S{userAt}')
+          .expectStatus(200);
+      });
+    });
+
+    describe('Edit Transaction item by ID', () => {
+      it('Should fail without token', () => {
+        return pactum
+          .spec()
+          .patch('/transaction-item/{id}')
+          .withPathParams('id', '$S{transactionItemId}')
+          .withBody({
+            qty : 5
+          })
+          .expectStatus(401);
+      });
+
+      it('Should modify transaction item by ID successfully', () => {
+        return pactum
+          .spec()
+          .patch('/transaction-item/{id}')
+          .withPathParams('id', '$S{transactionItemId}')
+          .withBearerToken('$S{userAt}')
+          .withBody({
+            qty : 5
+          })
+          .expectStatus(200);
+      });
+    });
+    describe('Delete Transaction item by ID',()=>{
+      describe('Delete Book by ID', () => {
+        it('Should fail without token', () => {
+          return pactum
+            .spec()
+            .delete('/transaction-item/{id}')
+            .withPathParams('id', '$S{transactionItemId}')
+            .expectStatus(401);
+        });
+  
+        it('Should delete book by ID successfully', () => {
+          return pactum
+            .spec()
+            .delete('/transaction-item/{id}')
+            .withPathParams('id', '$S{transactionItemId}')
+            .withBearerToken('$S{userAt}')
+            .expectStatus(200);
+        });
+      });
+    });
+  });
+    describe('Book',()=>{
+      describe('Delete Book by ID', () => {
+        it('Should fail without token', () => {
+          return pactum
+            .spec()
+            .delete('/book/{id}')
+            .withPathParams('id', '$S{bookId}')
+            .expectStatus(401);
+        });
+  
+        it('Should delete book by ID successfully', () => {
+          return pactum
+            .spec()
+            .delete('/book/{id}')
+            .withPathParams('id', '$S{bookId}')
+            .withBearerToken('$S{userAt}')
+            .expectStatus(200);
+        });
+      });
+    })
+    describe('Transaction',()=>{
+      describe('Delete Transaction by ID', () => {
+        it('Should fail without token', () => {
+          return pactum
+            .spec()
+            .delete('/transaction/{id}')
+            .withPathParams('id', '$S{transactionId}')
+            .expectStatus(401);
+        });
+  
+        it('Should delete transaction by ID successfully', () => {
+          return pactum
+            .spec()
+            .delete('/transaction/{id}')
+            .withPathParams('id', '$S{transactionId}')
+            .withBearerToken('$S{userAt}')
+            .expectStatus(200);
+        });
+      });
+    });
+    describe('User',()=>{
+      describe('Delete user by id',()=>{
+        it('Should fail without token', () => {
+          return pactum
+            .spec()
+            .delete('/user/{id}')
+            .withPathParams('id', '$S{userId}')
+            .expectStatus(401);
+        });
+  
+        it('Should delete user by ID successfully', () => {
+          return pactum
+            .spec()
+            .delete('/user/{id}')
+            .withPathParams('id', '$S{userId}')
+            .withBearerToken('$S{userAt}')
+            .expectStatus(200);
+        });
+      });
+    });
+  });

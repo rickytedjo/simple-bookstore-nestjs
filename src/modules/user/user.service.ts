@@ -30,7 +30,7 @@ export class UserService{
         });
     }
     getUsers(){
-        return this.prisma.book.findMany({});
+        return this.prisma.user.findMany();
     }
     async editUser(userId : number, dto: editUserDto){
         const updateData: any = {};

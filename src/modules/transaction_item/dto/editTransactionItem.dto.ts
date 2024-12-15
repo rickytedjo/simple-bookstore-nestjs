@@ -5,15 +5,15 @@ export class editTransactionItemDto{
     @IsOptional()
     @IsInt()
     @Min(0)
-    transactionId : number;
+    transactionId? : number;
 
     @IsOptional()
     @IsInt()
     @Min(0)
-    bookId : number;
+    bookId? : number;
 
     @IsOptional()
     @IsInt()
     @Min(0)
-    qty : number;
+    qty? : number;
 }
