@@ -33,18 +33,27 @@ export class UserService{
         return this.prisma.book.findMany({});
     }
     async editUser(userId : number, dto: editUserDto){
-        const { email, password, username } = dto;
         const updateData: any = {};
-        if (email) updateData.email = email;
-        if (password) updateData.password = hash(password);
-        if (username) updateData.username = username;
+
+        if (dto.email) updateData.email = dto.email;
+        if (dto.password) updateData.password = await hash(dto.password);
+        if (dto.username) updateData.username = dto.username;
+
+        const filteredData = Object.fromEntries(
+            Object.entries(updateData).filter(([_, value]) => value !== undefined && value !== null)
+        );
+    
+        if (Object.keys(filteredData).length === 0) {
+            throw new Error('No valid fields provided to update');
+        }
 
         return await this.prisma.user.update({
             where : {
                 id : userId
             },
             data : {
-                ...updateData}
+                ...updateData
+            }
         })  
     }
     async deleteUser(userId : number){

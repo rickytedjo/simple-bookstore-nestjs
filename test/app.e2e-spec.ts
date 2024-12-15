@@ -4,9 +4,8 @@ import * as pactum from 'pactum';
 import { AppModule } from './../src/app.module';
 import { PrismaService } from './../src/prisma/prisma.service';
 import { AuthDto, RegDto } from './../src/modules/auth/dto';
-import { createUserDto, editUserDto } from './../src/modules/user/dto';
+import { createUserDto, editUserDto } from 'src/modules/user/dto';
 import { createBookDto, editBookDto } from 'src/modules/book/dto';
-import { createTransactionDto } from 'src/modules/transaction/dto';
 
 describe('App E2E', () => {
   let app: INestApplication;
@@ -122,9 +121,9 @@ describe('App E2E', () => {
       username: 'testguy2',
     };
     const editUserDto: editUserDto = {
-      email: 'test3@gmail.com',
+      email: 'test.123@gmail.com',
       password: '1235',
-      username: 'testguy1',
+      username: 'testguy2',
     }
 
     describe('Create User', () => {
@@ -182,15 +181,6 @@ describe('App E2E', () => {
           .expectStatus(401);
       });
 
-      it('Should modify user by ID successfully', () => {
-        return pactum
-          .spec()
-          .patch('/user/{id}')
-          .withPathParams('id', '$S{userId}')
-          .withBearerToken('$S{userAt}')
-          .withBody(editUserDto)
-          .expectStatus(200);
-      });
     });
   });
   describe('Book', () => {

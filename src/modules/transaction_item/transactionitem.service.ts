@@ -109,6 +109,14 @@ export class TransactionItemService {
             })
         }
 
+        const filteredData = Object.fromEntries(
+            Object.entries(updateData).filter(([_, value]) => value !== undefined && value !== null)
+        );
+    
+        if (Object.keys(filteredData).length === 0) {
+            throw new Error('No valid fields provided to update');
+        }
+
         const temp = await this.prisma.transactionItem.update({
             where : {
                 id : transactionItemId
