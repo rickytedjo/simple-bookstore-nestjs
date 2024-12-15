@@ -2,7 +2,7 @@
 
 REST API transaksi toko buku sederhana.
 
-Dokumentasi API: <a src="https://documenter.getpostman.com/view/29780531/2sAYHxp4pR">link</a>
+Dokumentasi API: <a href="https://documenter.getpostman.com/view/29780531/2sAYHxp4pR">link</a>
 
 ## Design pattern
 
